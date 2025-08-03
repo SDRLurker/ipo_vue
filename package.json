@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "homepage": "https://sdrlurker.github.io/ipo_vue"
+  "homepage": "https://sdrlurker.github.io/ipo_vue",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
