@@ -5,7 +5,9 @@
         <router-link to="/">홈</router-link> |
         <router-link :to="'/date/' + today_str">오늘 청약</router-link> |
         <router-link to="/cal">달력</router-link> |
-        <a href="https://docs.google.com/spreadsheets/d/18BZ2HBN010C9GmoNOBWu0ddzOECp73-Q0DFTwxey8gU/edit?usp=sharing" target="_blank">청약 정보</a>
+        <a href="https://docs.google.com/spreadsheets/d/18BZ2HBN010C9GmoNOBWu0ddzOECp73-Q0DFTwxey8gU/edit?usp=sharing" target="_blank">청약 정보</a> |
+        <a href="https://sdr1982.tistory.com/guestbook" target="_blank">방명록</a> //
+        <a href="https://sdrlurker.notion.site/166d1dff257980d3a8e8c71e5c022e81" target="_blank">해외 양도세 프로그램</a>
       </nav>
     </header>
 

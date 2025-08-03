@@ -149,7 +149,7 @@ const fetchMonthSpecificNotes = async (year, month) => {
   monthNotesError.ref = null;
   currentMonthNotes.value = null; // 기존 내용 초기화
 
-  const filePath = `/${year}${month}.html`; // 예: /202507.html
+  const filePath = `${year}${month}.html`;
   console.log(`월별 특이사항 파일 로딩 시도: ${filePath}`);
 
   try {
