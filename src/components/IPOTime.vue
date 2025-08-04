@@ -31,7 +31,7 @@
         </tr>
       </template>
       <tr v-else>
-        <td colspan="5">조견표 데이터를 찾을 수 없습니다.</td>
+        <td colspan="5">시간표 데이터가 없습니다.</td>
       </tr>
     </tbody>
   </table>
