@@ -53,15 +53,17 @@
               <td v-if="group.items.length > 1" class="data-cell total-cell">{{ group.total.rate1.toFixed(2) }}</td>
             </tr>
             <tr>
-              <td :class="index === 0 ? 'label-cell' : 'label-placeholder-td'">현재 비례경쟁률</td>
+              <td :class="index === 0 ? 'label-cell' : 'label-placeholder-td'">현재 비례경쟁률 (예상)</td>
               <td v-for="item in group.items" :key="item.id" class="data-cell" :class="{ 'red-text': item.rate2 > group.total.rate2 }">
-                {{ item.rate2 }}
+                {{ item.rate2 }} <span v-if="item.ratep">( {{item.ratep.toFixed(4)}} )</span>
               </td>
               <td v-if="group.items.length > 1" class="data-cell total-cell">&nbsp;</td>
             </tr>
               <tr>
-              <td :class="index === 0 ? 'label-cell' : 'label-placeholder-td'">균등배정 주식 수</td>
-              <td v-for="item in group.items" :key="item.id" class="data-cell">{{ uniformAssignmentShares(item) }}</td>
+              <td :class="index === 0 ? 'label-cell' : 'label-placeholder-td'">균등배정 주식 수 (예상)</td>
+              <td v-for="item in group.items" :key="item.id" class="data-cell">
+                {{ uniformAssignmentShares(item, item.count) }} <span v-if="item.countp">( {{ uniformAssignmentShares(item, item.countp) }} )</span>
+              </td>
               <td v-if="group.items.length > 1" class="data-cell total-cell">&nbsp;</td>
             </tr>
             <tr>
@@ -165,10 +167,9 @@ const totalMarginBillion = (ipoItem) => {
   return parseFloat(rawValue.toFixed(2));
 };
 
-const uniformAssignmentShares = (ipoItem) => {
+const uniformAssignmentShares = (ipoItem, count) => {
   if (!ipoItem || !ipoItem.assign || !ipoItem.count) return '0.00';
   const assign = ipoItem.assign;
-  const count = ipoItem.count;
   if (count === 0) return '0.00';
   return ((assign / 2.0) / count).toFixed(2);
 };

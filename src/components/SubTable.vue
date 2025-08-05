@@ -7,6 +7,7 @@
             <th class="title">청약단위</th>
             <th class="title">청약증거금</th>
             <th class="title">배정비례주식수</th>
+            <th v-if="ipo.ratep" class="title">예상비례주식수</th>
             <th class="title">등급</th>
           </tr>
         </thead>
@@ -15,10 +16,11 @@
             <td>{{ unit.toLocaleString() }}</td>
             <td>{{ (unit * ipo.price * ipo.margin).toLocaleString() }}</td>
             <td>{{ (unit / ipo.rate2) }}</td>
+            <td v-if="ipo.ratep">{{ (unit / ipo.ratep) }}</td>
             <td>{{ getLevel(unit) }}</td>
           </tr>
         </tbody>
-      </table>      
+      </table>
     </div>
     <div v-else class="not-found-message">
       조견표 데이터를 표시할 수 없습니다.
