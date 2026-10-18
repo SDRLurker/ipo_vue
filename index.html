@@ -2,6 +2,8 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
+    <!-- 목적지로 리다이렉트 시 직전 주소(github.io)를 레퍼러로 남기지 않음 -->
+    <meta name="referrer" content="no-referrer">
     <title>페이지 이동 중...</title>
     <script type="text/javascript">
         // 현재 URL의 경로와 쿼리 파라미터 부분을 가져옵니다.
@@ -17,7 +19,7 @@
 <body>
     <p>새로운 주소로 이동 중입니다. 잠시만 기다려주세요.</p>
     <p>만약 자동으로 이동되지 않는다면, 아래 링크를 클릭해주세요.</p>
-    <a id="redirectLink" href="#">새 주소로 이동하기</a>
+    <a id="redirectLink" href="#" rel="noreferrer">새 주소로 이동하기</a>
     <script>
         document.getElementById('redirectLink').href = newUrl;
     </script>
