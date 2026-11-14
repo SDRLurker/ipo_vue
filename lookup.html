@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>마크다운 & JSON 조견표 생성기</title>
+  <style>
+    body { font-family: monospace; padding: 20px; max-width: 900px; margin: auto; }
+    textarea { width: 100%; height: 160px; margin-bottom: 10px; padding: 8px; box-sizing: border-box; }
+    .controls { margin-bottom: 15px; display: flex; flex-wrap: wrap; gap: 15px; align-items: center; }
+    input[type="number"] { padding: 4px; width: 100px; }
+    button { padding: 6px 12px; cursor: pointer; font-weight: bold; }
+    .output-wrap { display: flex; gap: 15px; }
+    .output-box { flex: 1; display: flex; flex-direction: column; }
+    .output-box textarea { height: 320px; }
+    .box-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+  </style>
+</head>
+<body>
+  <h1> 조견표 생성기 </h1>
+  <textarea id="inputText">[유진투자증권㈜의 청약주식별 청약단위]
+청약주식수	청약단위
+10주 이상 ~ 100주 이하	10주
+100주 초과 ~ 500주 이하	50주
+500주 초과 ~ 1,000주 이하	100주
+1,000주 초과 ~ 2,000주 이하	200주
+2,000주 초과 ~ 5,000주 이하	500주
+5,000주 초과 ~ 10,000주 이하	1,000주
+10,000주 초과	2,000주</textarea>
+
+  <div class="controls">
+    <label>공모가: <input type="number" id="offeringPrice" value="12300"> 원</label>
+    <label>증거금율: <input type="number" id="marginRate" value="50"> %</label>
+    <label>최대 주식수: <input type="number" id="maxLimit" value="50000"> 주</label>
+    <button onclick="generateAll()">생성하기</button>
+  </div>
+
+  <div class="output-wrap">
+    <div class="output-box">
+      <div class="box-header">
+        <strong>마크다운 결과</strong>
+        <button onclick="copyText('outputMD')">마크다운 복사</button>
+      </div>
+      <textarea id="outputMD" readonly></textarea>
+    </div>
+
+    <div class="output-box">
+      <div class="box-header">
+        <strong>JSON 결과</strong>
+        <button onclick="copyText('outputJSON')">JSON 복사</button>
+      </div>
+      <textarea id="outputJSON" readonly></textarea>
+    </div>
+  </div>
+
+  <script>
+    function generateAll() {
+      const text = document.getElementById('inputText').value.trim();
+      const offeringPrice = parseFloat(document.getElementById('offeringPrice').value) || 0;
+      const marginRate = parseFloat(document.getElementById('marginRate').value) || 50;
+      const maxLimit = parseInt(document.getElementById('maxLimit').value, 10) || 0;
+      
+      const unitMargin = offeringPrice * (marginRate / 100);
+      const lines = text.split('\n');
+
+      let md = '**청약단위(조견표)**\n\n';
+      md += '| **청약주식** | **청약단위** | **청약금액** |\n';
+      md += '| --- | --- | --- |\n';
+
+      // 중복 방지를 위한 Set 객체
+      const unitSet = new Set();
+
+      lines.forEach(line => {
+        const cleanLine = line.trim();
+        if (!cleanLine || !/\d/.test(cleanLine)) return;
+
+        const parts = cleanLine.split(/\t+|\s{2,}/);
+        if (parts.length < 2) return;
+
+        const rangeStr = parts[0].trim();
+        const unitStr = parts[1].trim();
+
+        const rangeNums = rangeStr.match(/[\d,]+/g).map(n => parseInt(n.replace(/,/g, ''), 10));
+        const step = parseInt(unitStr.replace(/[^\d]/g, ''), 10);
+
+        const start = rangeNums[0];
+        const end = rangeNums.length > 1 ? rangeNums[1] : maxLimit;
+
+        // 1. 마크다운 행 생성
+        const p1 = (start * unitMargin).toLocaleString('ko-KR') + '원';
+        const p2 = ((start + step) * unitMargin).toLocaleString('ko-KR') + '원';
+        const pEnd = (end * unitMargin).toLocaleString('ko-KR') + '원';
+
+        const amountStr = (start + step >= end) ? `${p1} ... ${pEnd}` : `${p1} ${p2} ... ${pEnd}`;
+        md += `| ${rangeStr} | ${unitStr} | ${amountStr} |\n`;
+
+        // 2. JSON unit_arr용 주식수 누적 ('초과'인 경우 start + step부터, '이상'인 경우 start부터)
+        const firstShare = rangeStr.includes('초과') ? start + step : start;
+        for (let s = firstShare; s <= end; s += step) {
+          unitSet.add(s);
+        }
+      });
+
+      const jsonObj = {
+        level: {},
+        unit_arr: Array.from(unitSet).sort((a, b) => a - b)
+      };
+
+      document.getElementById('outputMD').value = md;
+      // "{\n  \"level\": {\n  }," 형태를 유지하기 위해 문자열 치환 적용
+      document.getElementById('outputJSON').value = JSON.stringify(jsonObj, null, 2).replace('"level": {}', '"level": {\n  }');
+    }
+
+    function copyText(elementId) {
+      const output = document.getElementById(elementId);
+      output.select();
+      navigator.clipboard.writeText(output.value);
+    }
+
+    window.onload = generateAll;
+  </script>
+</body>
+</html>
